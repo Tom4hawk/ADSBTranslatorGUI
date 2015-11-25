@@ -17,6 +17,7 @@ namespace AdsbTranslatorGUI
         private int rawPort;
         private int receiveTimeout;
         private int aircraftTTL;
+        private string sourceAddress;
         private bool fixCRC;
 
         public Form1()
@@ -26,20 +27,24 @@ namespace AdsbTranslatorGUI
             {
                 //Próbujemy wczytać dane z rejestru
                 RegistryKey key = Registry.LocalMachine.OpenSubKey("Software\\ADSBTranslator",true);
+
                 sbsPort = (int)key.GetValue("SBSOutput");
                 rawPort = (int)key.GetValue("RAWInput");
-                aircraftTTL = (int)key.GetValue("AircraftTTL");
                 receiveTimeout = (int)key.GetValue("ReceiveTimeout");
+                aircraftTTL = (int)key.GetValue("AircraftTTL");
+                sourceAddress = (string)key.GetValue("SourceIPAddress");
                 fixCRC = Convert.ToBoolean(key.GetValue("FixCRC"));
+
                 key.Close();
             }
             catch
             {
                 //Jeżeli z jakiś powodów nie jest to możliwe(brak uprawnień, klucze nie istnieją itp.) to ustawiamy domyślne wartości
-                sbsPort = 30003;
+                sbsPort = 3035;
                 rawPort = 30001;
                 receiveTimeout = 120;
                 aircraftTTL = 20;
+                sourceAddress = "127.0.0.1";
                 fixCRC = false;
                 MessageBox.Show("Odczytywanie z rejestru nie powiodło się. W pola zostały wpisane wartości domyślne.");
             }
@@ -47,21 +52,13 @@ namespace AdsbTranslatorGUI
             textBox2.Text = rawPort.ToString();
             textBox3.Text = receiveTimeout.ToString();
             textBox4.Text = aircraftTTL.ToString();
-            
-            if (fixCRC)
-            {
-                checkBox1.Checked = true;
-            }
-            else
-            {
-                checkBox1.Checked = false;
-            }
-
+            textBox5.Text = sourceAddress;
+            checkBox1.Checked = fixCRC ? true : false;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Close();//Zamykamy bez niczego, nei ma po co pytać bo i tak nic ważnego się nei straci
+            Close();//Zamykamy bez niczego, nie ma po co pytać bo i tak nic ważnego się nie straci
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -73,15 +70,9 @@ namespace AdsbTranslatorGUI
                 rawPort = Int32.Parse(textBox2.Text);
                 receiveTimeout = Int32.Parse(textBox3.Text);
                 aircraftTTL = Int32.Parse(textBox4.Text);
+                sourceAddress = textBox5.Text;
+                fixCRC = checkBox1.Checked ? true : false;
 
-                if (checkBox1.Checked)
-                {
-                    fixCRC = true;
-                }
-                else
-                {
-                    fixCRC = false;
-                }
 
                 //Staramy się je zapisać do rejestru
                 RegistryKey key;
@@ -91,6 +82,7 @@ namespace AdsbTranslatorGUI
                 key.SetValue("ReceiveTimeout", receiveTimeout); //timeout w sekundach
                 key.SetValue("RAWInput", rawPort);
                 key.SetValue("AircraftTTL", aircraftTTL);
+                key.SetValue("SourceIPAddress", sourceAddress);
                 key.SetValue("FixCRC", fixCRC);
                 key.Close();
 
