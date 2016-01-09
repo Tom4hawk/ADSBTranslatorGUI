@@ -15,7 +15,6 @@ namespace AdsbTranslatorGUI
     {
         private int sbsPort;
         private int rawPort;
-        private int receiveTimeout;
         private int aircraftTTL;
         private string sourceAddress;
         private bool fixCRC;
@@ -30,7 +29,6 @@ namespace AdsbTranslatorGUI
 
                 sbsPort = (int)key.GetValue("SBSOutput");
                 rawPort = (int)key.GetValue("RAWInput");
-                receiveTimeout = (int)key.GetValue("ReceiveTimeout");
                 aircraftTTL = (int)key.GetValue("AircraftTTL");
                 sourceAddress = (string)key.GetValue("SourceIPAddress");
                 fixCRC = Convert.ToBoolean(key.GetValue("FixCRC"));
@@ -42,7 +40,6 @@ namespace AdsbTranslatorGUI
                 //Jeżeli z jakiś powodów nie jest to możliwe(brak uprawnień, klucze nie istnieją itp.) to ustawiamy domyślne wartości
                 sbsPort = 3035;
                 rawPort = 30001;
-                receiveTimeout = 120;
                 aircraftTTL = 20;
                 sourceAddress = "127.0.0.1";
                 fixCRC = false;
@@ -50,7 +47,6 @@ namespace AdsbTranslatorGUI
             }
             textBox1.Text = sbsPort.ToString();
             textBox2.Text = rawPort.ToString();
-            textBox3.Text = receiveTimeout.ToString();
             textBox4.Text = aircraftTTL.ToString();
             textBox5.Text = sourceAddress;
             checkBox1.Checked = fixCRC ? true : false;
@@ -68,7 +64,6 @@ namespace AdsbTranslatorGUI
                 //Parsujemy dane z aplikacji
                 sbsPort = Int32.Parse(textBox1.Text);
                 rawPort = Int32.Parse(textBox2.Text);
-                receiveTimeout = Int32.Parse(textBox3.Text);
                 aircraftTTL = Int32.Parse(textBox4.Text);
                 sourceAddress = textBox5.Text;
                 fixCRC = checkBox1.Checked ? true : false;
@@ -79,7 +74,6 @@ namespace AdsbTranslatorGUI
                 key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("Software", true);
                 key = key.CreateSubKey("ADSBTranslator");
                 key.SetValue("SBSOutput", sbsPort);
-                key.SetValue("ReceiveTimeout", receiveTimeout); //timeout w sekundach
                 key.SetValue("RAWInput", rawPort);
                 key.SetValue("AircraftTTL", aircraftTTL);
                 key.SetValue("SourceIPAddress", sourceAddress);
